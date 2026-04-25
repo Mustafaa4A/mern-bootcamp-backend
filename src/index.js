@@ -7,6 +7,14 @@ import { connectDB } from "./config/db.js";
 
 //routes
 import userRoute from "./features/users/route.js";
+import locationRoute from "./features/locations/route.js";
+import libraryRoute from "./features/libraries/route.js";
+import cabinetRoute from "./features/cabinets/route.js";
+import shelfRoute from "./features/shelves/route.js";
+import categoryRoute from "./features/categories/route.js";
+import bookRoute from "./features/books/route.js";
+import volumeRoute from "./features/volumes/route.js";
+import bookPlacementRoute from "./features/book-placements/route.js";
 
 // initialize app
 const app = express();
@@ -21,6 +29,14 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/users", userRoute);
+app.use("/api/locations", locationRoute);
+app.use("/api/libraries", libraryRoute);
+app.use("/api/cabinets", cabinetRoute);
+app.use("/api/shelves", shelfRoute);
+app.use("/api/categories", categoryRoute);
+app.use("/api/books", bookRoute);
+app.use("/api/volumes", volumeRoute);
+app.use("/api/book-placements", bookPlacementRoute);
 
 // 404
 app.use((req, res) => {
