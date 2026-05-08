@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import MongoosePaginate from "mongoose-paginate-v2";
 
 const shelfSchema = new mongoose.Schema(
   {
@@ -23,6 +24,8 @@ export const validateShelf = (shelf, isUpdate = false) => {
   });
   return schema.validate(shelf);
 };
+
+shelfSchema.plugin(MongoosePaginate);
 
 const ShelfModel = mongoose.model("Shelf", shelfSchema);
 export default ShelfModel;

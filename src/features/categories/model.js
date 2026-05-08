@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import MongoosePaginate from "mongoose-paginate-v2";
 
 const categorySchema = new mongoose.Schema(
   {
@@ -16,6 +17,8 @@ export const validateCategory = (category, isUpdate = false) => {
   });
   return schema.validate(category);
 };
+
+categorySchema.plugin(MongoosePaginate);
 
 const CategoryModel = mongoose.model("Category", categorySchema);
 export default CategoryModel;

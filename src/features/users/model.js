@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import Joi from "joi";
 import jwt from "jsonwebtoken";
+import MongoosePaginate from "mongoose-paginate-v2";
 
 const userSchema = new mongoose.Schema(
   {
@@ -46,6 +47,8 @@ userSchema.methods.generateToken = function () {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };
+
+userSchema.plugin(MongoosePaginate);
 
 const model = mongoose.model("User", userSchema);
 

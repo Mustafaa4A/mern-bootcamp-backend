@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import MongoosePaginate from "mongoose-paginate-v2";
 
 const volumeSchema = new mongoose.Schema(
   {
@@ -21,6 +22,8 @@ export const validateVolume = (volume, isUpdate = false) => {
   });
   return schema.validate(volume);
 };
+
+volumeSchema.plugin(MongoosePaginate);
 
 const VolumeModel = mongoose.model("Volume", volumeSchema);
 export default VolumeModel;

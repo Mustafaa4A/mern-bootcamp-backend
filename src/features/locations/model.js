@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import MongoosePaginate from "mongoose-paginate-v2";
 
 const locationSchema = new mongoose.Schema(
   {
@@ -18,6 +19,8 @@ export const validateLocation = (location, isUpdate = false) => {
   });
   return schema.validate(location);
 };
+
+locationSchema.plugin(MongoosePaginate);
 
 const LocationModel = mongoose.model("Location", locationSchema);
 export default LocationModel;

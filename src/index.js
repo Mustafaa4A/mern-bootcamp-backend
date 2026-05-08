@@ -31,16 +31,16 @@ app.get("/health", (req, res) => {
 });
 
 // routes definition
-app.use("/api/auth", authRoute);
-app.use("/api/users", protect, userRoute);
-app.use("/api/locations", protect, locationRoute);
-app.use("/api/libraries", protect, libraryRoute);
-app.use("/api/cabinets", protect, cabinetRoute);
-app.use("/api/shelves", protect, shelfRoute);
-app.use("/api/categories", protect, categoryRoute);
-app.use("/api/books", protect, bookRoute);
-app.use("/api/volumes", protect, volumeRoute);
-app.use("/api/book-placements", protect, bookPlacementRoute);
+app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/users", protect, userRoute);
+app.use("/api/v1/locations", protect, locationRoute);
+app.use("/api/v1/libraries", protect, libraryRoute);
+app.use("/api/v1/cabinets", protect, cabinetRoute);
+app.use("/api/v1/shelves", protect, shelfRoute);
+app.use("/api/v1/categories", protect, categoryRoute);
+app.use("/api/v1/books", protect, bookRoute);
+app.use("/api/v1/volumes", protect, volumeRoute);
+app.use("/api/v1/book-placements", protect, bookPlacementRoute);
 
 // 404
 app.use((req, res) => {

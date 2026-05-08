@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import MongoosePaginate from "mongoose-paginate-v2";
 
 const bookPlacementSchema = new mongoose.Schema(
   {
@@ -29,6 +30,8 @@ export const validateBookPlacement = (placement, isUpdate = false) => {
   });
   return schema.validate(placement);
 };
+
+bookPlacementSchema.plugin(MongoosePaginate);
 
 const BookPlacementModel = mongoose.model("BookPlacement", bookPlacementSchema);
 export default BookPlacementModel;

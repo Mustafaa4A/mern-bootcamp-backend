@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import MongoosePaginate from "mongoose-paginate-v2";
 
 const cabinetSchema = new mongoose.Schema(
   {
@@ -23,6 +24,8 @@ export const validateCabinet = (cabinet, isUpdate = false) => {
   });
   return schema.validate(cabinet);
 };
+
+cabinetSchema.plugin(MongoosePaginate);
 
 const CabinetModel = mongoose.model("Cabinet", cabinetSchema);
 export default CabinetModel;

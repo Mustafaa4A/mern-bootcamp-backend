@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Joi from "joi";
+import MongoosePaginate from "mongoose-paginate-v2";
 
 const librarySchema = new mongoose.Schema(
   {
@@ -23,6 +24,8 @@ export const validateLibrary = (library, isUpdate = false) => {
   });
   return schema.validate(library);
 };
+
+librarySchema.plugin(MongoosePaginate);
 
 const LibraryModel = mongoose.model("Library", librarySchema);
 export default LibraryModel;
