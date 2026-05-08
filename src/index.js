@@ -17,9 +17,12 @@ import volumeRoute from "./features/volumes/route.js";
 import bookPlacementRoute from "./features/book-placements/route.js";
 import authRoute from "./features/auth/route.js";
 import { protect } from "./middleware/auth.js";
+import ErrorHandler from "./middleware/error.js";
 
 // initialize app
 const app = express();
+
+// body parser  
 app.use(express.json());
 
 // check health
@@ -41,6 +44,9 @@ app.use("/api/v1/categories", protect, categoryRoute);
 app.use("/api/v1/books", protect, bookRoute);
 app.use("/api/v1/volumes", protect, volumeRoute);
 app.use("/api/v1/book-placements", protect, bookPlacementRoute);
+
+// error handling
+app.use(ErrorHandler);
 
 // 404
 app.use((req, res) => {
