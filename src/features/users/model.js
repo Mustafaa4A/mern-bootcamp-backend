@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import Joi from "joi";
+import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },
     role: {
       type: String,
       required: true,
@@ -33,6 +34,18 @@ userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
 });
+
+// Instance Method: Check Password
+userSchema.methods.checkPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+// Instance Method: Generate Token
+userSchema.methods.generateToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
+};
 
 const model = mongoose.model("User", userSchema);
 

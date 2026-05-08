@@ -15,6 +15,8 @@ import categoryRoute from "./features/categories/route.js";
 import bookRoute from "./features/books/route.js";
 import volumeRoute from "./features/volumes/route.js";
 import bookPlacementRoute from "./features/book-placements/route.js";
+import authRoute from "./features/auth/route.js";
+import { protect } from "./middleware/auth.js";
 
 // initialize app
 const app = express();
@@ -28,15 +30,17 @@ app.get("/health", (req, res) => {
   });
 });
 
-app.use("/api/users", userRoute);
-app.use("/api/locations", locationRoute);
-app.use("/api/libraries", libraryRoute);
-app.use("/api/cabinets", cabinetRoute);
-app.use("/api/shelves", shelfRoute);
-app.use("/api/categories", categoryRoute);
-app.use("/api/books", bookRoute);
-app.use("/api/volumes", volumeRoute);
-app.use("/api/book-placements", bookPlacementRoute);
+// routes definition
+app.use("/api/auth", authRoute);
+app.use("/api/users", protect, userRoute);
+app.use("/api/locations", protect, locationRoute);
+app.use("/api/libraries", protect, libraryRoute);
+app.use("/api/cabinets", protect, cabinetRoute);
+app.use("/api/shelves", protect, shelfRoute);
+app.use("/api/categories", protect, categoryRoute);
+app.use("/api/books", protect, bookRoute);
+app.use("/api/volumes", protect, volumeRoute);
+app.use("/api/book-placements", protect, bookPlacementRoute);
 
 // 404
 app.use((req, res) => {

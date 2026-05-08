@@ -5,14 +5,22 @@ import CabinetModel, { validateCabinet } from "./model.js";
 export const createCabinet = async (req, res) => {
   try {
     const { error } = validateCabinet(req.body);
-    if (error) return res.status(400).json({ status: false, message: error.details[0].message });
+    if (error)
+      return res
+        .status(400)
+        .json({ status: false, message: error.details[0].message });
 
     const cabinet = new CabinetModel(req.body);
     await cabinet.save();
     res.status(201).json({ status: true, data: cabinet });
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ status: false, message: "Cabinet name already exists in this library" });
+      return res
+        .status(400)
+        .json({
+          status: false,
+          message: "Cabinet name already exists in this library",
+        });
     }
     res.status(500).json({ status: false, message: error.message });
   }
@@ -33,12 +41,17 @@ export const getCabinetById = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ status: false, message: "Invalid cabinet id" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Invalid cabinet id" });
     }
 
     const cabinet = await CabinetModel.findById(id);
-    
-    if (!cabinet) return res.status(404).json({ status: false, message: "Cabinet not found" });
+
+    if (!cabinet)
+      return res
+        .status(404)
+        .json({ status: false, message: "Cabinet not found" });
     res.status(200).json({ status: true, data: cabinet });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
@@ -50,11 +63,16 @@ export const updateCabinet = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ status: false, message: "Invalid cabinet id" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Invalid cabinet id" });
     }
 
     const { error } = validateCabinet(req.body, true);
-    if (error) return res.status(400).json({ status: false, message: error.details[0].message });
+    if (error)
+      return res
+        .status(400)
+        .json({ status: false, message: error.details[0].message });
 
     const updatedCabinet = await CabinetModel.findOneAndUpdate(
       { _id: id },
@@ -63,13 +81,26 @@ export const updateCabinet = async (req, res) => {
     );
 
     if (!updatedCabinet) {
-      return res.status(404).json({ status: false, message: "Cabinet not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Cabinet not found" });
     }
 
-    res.status(200).json({ status: true, message: "Cabinet updated successfully", data: updatedCabinet });
+    res
+      .status(200)
+      .json({
+        status: true,
+        message: "Cabinet updated successfully",
+        data: updatedCabinet,
+      });
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(400).json({ status: false, message: "Cabinet name already exists in this library" });
+      return res
+        .status(400)
+        .json({
+          status: false,
+          message: "Cabinet name already exists in this library",
+        });
     }
     res.status(500).json({ status: false, message: error.message });
   }
@@ -80,15 +111,21 @@ export const deleteCabinet = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ status: false, message: "Invalid cabinet id" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Invalid cabinet id" });
     }
 
     const deletedCabinet = await CabinetModel.findByIdAndDelete(id);
     if (!deletedCabinet) {
-      return res.status(404).json({ status: false, message: "Cabinet not found" });
+      return res
+        .status(404)
+        .json({ status: false, message: "Cabinet not found" });
     }
 
-    res.status(200).json({ status: true, message: "Cabinet deleted successfully" });
+    res
+      .status(200)
+      .json({ status: true, message: "Cabinet deleted successfully" });
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }
