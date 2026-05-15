@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+const parseJSON = (val) => {
+  if (typeof val === "string" && (val.startsWith("{") || val.startsWith("["))) {
+    try {
+      return JSON.parse(val);
+    } catch (e) {
+      return val;
+    }
+  }
+  return val;
+};
+
 // generic function used to fetch paginated data with search
 export const fetchData = (Model) => async (req, res) => {
   try {
@@ -7,8 +18,15 @@ export const fetchData = (Model) => async (req, res) => {
       return res.status(400).json({ status: false, message: "Invalid model" });
     }
 
-    const { options, query = {}, search = {}, name } = req.query;
+    let { options, query = {}, search = {}, name } = req.query;
+
+    options = parseJSON(options);
+    query = parseJSON(query);
+    search = parseJSON(search);
+
     const { keyword, fields = [] } = search;
+
+    console.log(req.query);
 
     let searchCriteria = {};
     if (keyword && fields.length) {
@@ -39,7 +57,10 @@ export const fetchData = (Model) => async (req, res) => {
 // generic function used for get list of items
 export const getList = (Model) => async (req, res, next) => {
   try {
-    const filter = { ...req.query };
+    let { query = {} } = req.query;
+    query = parseJSON(query);
+
+    const filter = { ...query };
     if (req?.user?.branch) {
       filter.branch = req?.user?.branch;
     }
@@ -54,7 +75,10 @@ export const getList = (Model) => async (req, res, next) => {
 // generic function used for fetch item with pagination
 export const fetchItem = (Model) => async (req, res) => {
   try {
-    const { options, query = {} } = req.query;
+    let { options, query = {} } = req.query;
+    options = parseJSON(options);
+    query = parseJSON(query);
+
     const filter = typeof query === "string" ? { name: { $regex: query, $options: "i" } } : query;
 
     if (req?.user?.branch) {
