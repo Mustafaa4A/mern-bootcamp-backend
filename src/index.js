@@ -25,11 +25,10 @@ const app = express();
 // query parser
 app.set("query parser", "extended");
 
-// body parser  
+// body parser
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
-
 
 // check health
 app.get("/health", (req, res) => {

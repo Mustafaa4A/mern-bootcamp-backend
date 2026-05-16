@@ -26,8 +26,6 @@ export const fetchData = (Model) => async (req, res) => {
 
     const { keyword, fields = [] } = search;
 
-    console.log(req.query);
-
     let searchCriteria = {};
     if (keyword && fields.length) {
       const searchFields = Array.isArray(fields) ? fields : [fields];
@@ -79,7 +77,10 @@ export const fetchItem = (Model) => async (req, res) => {
     options = parseJSON(options);
     query = parseJSON(query);
 
-    const filter = typeof query === "string" ? { name: { $regex: query, $options: "i" } } : query;
+    const filter =
+      typeof query === "string"
+        ? { name: { $regex: query, $options: "i" } }
+        : query;
 
     if (req?.user?.branch) {
       filter.branch = req?.user?.branch;
@@ -93,120 +94,168 @@ export const fetchItem = (Model) => async (req, res) => {
 };
 
 // generic function used for fetch single item
-export const fetchSingle = (Model, itemName = "Item") => async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ status: false, message: `Invalid ${itemName.toLowerCase()} id` });
-    }
+export const fetchSingle =
+  (Model, itemName = "Item") =>
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          status: false,
+          message: `Invalid ${itemName.toLowerCase()} id`,
+        });
+      }
 
-    const item = await Model.findById(id);
-    if (!item) {
-      return res.status(404).json({ status: false, message: `${itemName} not found` });
-    }
+      const item = await Model.findById(id);
+      if (!item) {
+        return res
+          .status(404)
+          .json({ status: false, message: `${itemName} not found` });
+      }
 
-    res.send({ status: true, data: item });
-  } catch (err) {
-    res.status(500).json({ status: false, message: err.message });
-  }
-};
+      res.send({ status: true, data: item });
+    } catch (err) {
+      res.status(500).json({ status: false, message: err.message });
+    }
+  };
 
 // generic function used for create item
-export const createItem = (Model, validate, duplicateMsg) => async (req, res) => {
-  try {
-    if (validate) {
-      const { error } = validate(req.body);
-      if (error) return res.status(400).json({ status: false, message: error.details[0].message });
-    }
+export const createItem =
+  (Model, validate, duplicateMsg) => async (req, res) => {
+    try {
+      if (validate) {
+        const { error } = validate(req.body);
+        if (error)
+          return res
+            .status(400)
+            .json({ status: false, message: error.details[0].message });
+      }
 
-    const item = new Model(req.body);
-    await item.save();
-    res.status(201).json({ status: true, data: item });
-  } catch (error) {
-    if (error.code === 11000 && duplicateMsg) {
-      return res.status(400).json({ status: false, message: duplicateMsg });
+      const item = new Model(req.body);
+      await item.save();
+      res.status(201).json({ status: true, data: item });
+    } catch (error) {
+      if (error.code === 11000 && duplicateMsg) {
+        return res.status(400).json({ status: false, message: duplicateMsg });
+      }
+      res.status(500).json({ status: false, message: error.message });
     }
-    res.status(500).json({ status: false, message: error.message });
-  }
-};
+  };
 
 // generic function used for update item
-export const updateItem = (Model, validate, duplicateMsg, itemName = "Item") => async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ status: false, message: `Invalid ${itemName.toLowerCase()} id` });
-    }
+export const updateItem =
+  (Model, validate, duplicateMsg, itemName = "Item") =>
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          status: false,
+          message: `Invalid ${itemName.toLowerCase()} id`,
+        });
+      }
 
-    if (validate) {
-      const { error } = validate(req.body, true);
-      if (error) return res.status(400).json({ status: false, message: error.details[0].message });
-    }
+      if (validate) {
+        const { error } = validate(req.body, true);
+        if (error)
+          return res
+            .status(400)
+            .json({ status: false, message: error.details[0].message });
+      }
 
-    const updatedItem = await Model.findOneAndUpdate(
-      { _id: id },
-      { $set: req.body },
-      { new: true, runValidators: true }
-    );
+      const updatedItem = await Model.findOneAndUpdate(
+        { _id: id },
+        { $set: req.body },
+        { new: true, runValidators: true }
+      );
 
-    if (!updatedItem) {
-      return res.status(404).json({ status: false, message: `${itemName} not found` });
-    }
+      if (!updatedItem) {
+        return res
+          .status(404)
+          .json({ status: false, message: `${itemName} not found` });
+      }
 
-    res.status(200).json({ status: true, message: `${itemName} updated successfully`, data: updatedItem });
-  } catch (error) {
-    if (error.code === 11000 && duplicateMsg) {
-      return res.status(400).json({ status: false, message: duplicateMsg });
+      res.status(200).json({
+        status: true,
+        message: `${itemName} updated successfully`,
+        data: updatedItem,
+      });
+    } catch (error) {
+      if (error.code === 11000 && duplicateMsg) {
+        return res.status(400).json({ status: false, message: duplicateMsg });
+      }
+      res.status(500).json({ status: false, message: error.message });
     }
-    res.status(500).json({ status: false, message: error.message });
-  }
-};
+  };
 
 // generic function used for update item with save hook
-export const updateItemWithSave = (Model, validate, duplicateMsg, itemName = "Item") => async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ status: false, message: `Invalid ${itemName.toLowerCase()} id` });
-    }
+export const updateItemWithSave =
+  (Model, validate, duplicateMsg, itemName = "Item") =>
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          status: false,
+          message: `Invalid ${itemName.toLowerCase()} id`,
+        });
+      }
 
-    if (validate) {
-      const { error } = validate(req.body, true);
-      if (error) return res.status(400).json({ status: false, message: error.details[0].message });
-    }
+      if (validate) {
+        const { error } = validate(req.body, true);
+        if (error)
+          return res
+            .status(400)
+            .json({ status: false, message: error.details[0].message });
+      }
 
-    const item = await Model.findById(id);
-    if (!item) {
-      return res.status(404).json({ status: false, message: `${itemName} not found` });
-    }
+      const item = await Model.findById(id);
+      if (!item) {
+        return res
+          .status(404)
+          .json({ status: false, message: `${itemName} not found` });
+      }
 
-    Object.assign(item, req.body);
-    await item.save();
+      Object.assign(item, req.body);
+      await item.save();
 
-    res.status(200).json({ status: true, message: `${itemName} updated successfully`, data: item });
-  } catch (error) {
-    if (error.code === 11000 && duplicateMsg) {
-      return res.status(400).json({ status: false, message: duplicateMsg });
+      res.status(200).json({
+        status: true,
+        message: `${itemName} updated successfully`,
+        data: item,
+      });
+    } catch (error) {
+      if (error.code === 11000 && duplicateMsg) {
+        return res.status(400).json({ status: false, message: duplicateMsg });
+      }
+      res.status(500).json({ status: false, message: error.message });
     }
-    res.status(500).json({ status: false, message: error.message });
-  }
-};
+  };
 
 // generic function used for delete item
-export const deleteItem = (Model, itemName = "Item") => async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ status: false, message: `Invalid ${itemName.toLowerCase()} id` });
-    }
+export const deleteItem =
+  (Model, itemName = "Item") =>
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          status: false,
+          message: `Invalid ${itemName.toLowerCase()} id`,
+        });
+      }
 
-    const deletedItem = await Model.findByIdAndDelete(id);
-    if (!deletedItem) {
-      return res.status(404).json({ status: false, message: `${itemName} not found` });
-    }
+      const deletedItem = await Model.findByIdAndDelete(id);
+      if (!deletedItem) {
+        return res
+          .status(404)
+          .json({ status: false, message: `${itemName} not found` });
+      }
 
-    res.status(200).json({ status: true, message: `${itemName} deleted successfully` });
-  } catch (error) {
-    res.status(500).json({ status: false, message: error.message });
-  }
-};
+      res
+        .status(200)
+        .json({ status: true, message: `${itemName} deleted successfully` });
+    } catch (error) {
+      res.status(500).json({ status: false, message: error.message });
+    }
+  };
